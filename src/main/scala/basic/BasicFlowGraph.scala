@@ -2,15 +2,16 @@ package basic
 
 import akka.actor.ActorSystem
 import akka.stream.FlowMaterializer
-import akka.stream.scaladsl.OperationAttributes.InputBuffer
 import akka.stream.scaladsl._
 import akka.stream.scaladsl.FlowGraphImplicits
-
-
-import scala.concurrent.forkjoin.ThreadLocalRandom
 import scala.util.{Failure, Success, Try}
 
-object BasicFlow {
+
+/**
+ * This FlowGraph has 2 Sources and 1 Sink
+ */
+
+object BasicFlowGraph {
 
   def main(args:Array[String]):Unit = {
 
