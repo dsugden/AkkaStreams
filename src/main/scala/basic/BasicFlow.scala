@@ -2,11 +2,13 @@ package basic
 
 import akka.actor.ActorSystem
 import akka.stream.FlowMaterializer
+import akka.stream.scaladsl.OperationAttributes.InputBuffer
 import akka.stream.scaladsl._
 import akka.stream.scaladsl.FlowGraphImplicits
 
 
 import scala.concurrent.forkjoin.ThreadLocalRandom
+import scala.util.{Failure, Success, Try}
 
 object BasicFlow {
 
@@ -34,17 +36,20 @@ object BasicFlow {
     val text2Source: Source[String] = Source(() => text2.split(",").iterator)
 
 
-    val f1 = Flow[String].map(x => x.toUpperCase)
+    val f1 = Flow[String].map(x => Success(x.toUpperCase))
 
-    val f2 = Flow[String].map(e => (e.toInt + 1).toString)
+    val f2 = Flow[String].map(e => Try{(e.toInt + 1).toString})
 
-    val consoleSink = ForeachSink[String](println)
+    val consoleSink = ForeachSink[Try[String]]{
+      case Success(v) => println(v)
+      case Failure(t) => println("!!!!")
+    }
 
     FlowGraph {  implicit builder =>
       import FlowGraphImplicits._
-      val merge = Merge[String]
+      val merge = Merge[Try[String]](OperationAttributes.inputBuffer(1,8))
       text1Source ~> f1  ~> merge ~> consoleSink
-      text2Source ~> merge
+      text2Source ~> f2 ~> merge
     }.run()
   }
 
