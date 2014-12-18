@@ -48,7 +48,7 @@ object BasicFlowGraph {
 
     FlowGraph {  implicit builder =>
       import FlowGraphImplicits._
-      val merge = Merge[Try[String]](OperationAttributes.inputBuffer(1,8))
+      val merge = Merge[Try[String]](OperationAttributes.inputBuffer(1,2))
       text1Source ~> f1  ~> merge ~> consoleSink
       text2Source ~> f2 ~> merge
     }.run()
